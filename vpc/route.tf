@@ -29,7 +29,7 @@ resource "aws_route_table" "private" {
 
 resource "aws_route_table_association" "public" {
   for_each = {
-    for key, value in locals.local.subnets : key => value
+    for key, value in local.subnets : key => value
     if value.public == true
   }
 
