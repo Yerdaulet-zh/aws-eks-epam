@@ -1,6 +1,6 @@
 locals {
   region         = "eu-central-1"
-  project_name   = "epam-ansible"
+  project_name   = "epam-eks"
   vpc_cidr_block = "10.1.0.0/16"
 
   subnets = {
