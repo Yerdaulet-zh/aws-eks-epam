@@ -1,4 +1,4 @@
-resource "aws_network_acl" "acl" {
+resource "aws_network_acl" "main" {
   vpc_id = aws_vpc.vpc.id
   tags = {
     Project = "${local.project_name}"
@@ -6,7 +6,7 @@ resource "aws_network_acl" "acl" {
 }
 
 resource "aws_network_acl_rule" "acl_rule_ingress" {
-  network_acl_id = aws_network_acl.acl.id
+  network_acl_id = aws_network_acl.main.id
   rule_number    = 100
   egress         = false
   protocol       = "-1"
@@ -17,7 +17,7 @@ resource "aws_network_acl_rule" "acl_rule_ingress" {
 }
 
 resource "aws_network_acl_rule" "acl_rule_egress" {
-  network_acl_id = aws_network_acl.acl.id
+  network_acl_id = aws_network_acl.main.id
   rule_number    = 100
   egress         = true
   protocol       = "-1"
@@ -28,6 +28,8 @@ resource "aws_network_acl_rule" "acl_rule_egress" {
 }
 
 resource "aws_network_acl_association" "network_acl_association" {
-  subnet_id      = aws_subnet.public.id
-  network_acl_id = aws_network_acl.acl.id
+  for_each = aws_subnet.managed
+
+  network_acl_id = aws_network_acl.main.id
+  subnet_id      = each.value.id
 }
