@@ -3,6 +3,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_support                   = true
   enable_dns_hostnames                 = true
   enable_network_address_usage_metrics = true
+  assign_generated_ipv6_cidr_block     = false
   tags = {
     Project = "${local.project_name}"
   }
