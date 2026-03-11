@@ -1,7 +1,7 @@
 resource "aws_network_acl" "main" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Project = "${local.project_name}"
+    Project = "${var.project_name}"
   }
 }
 

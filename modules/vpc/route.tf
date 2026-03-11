@@ -7,8 +7,8 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name    = "${local.project_name}-public-rt"
-    Project = local.project_name
+    Name    = "${var.project_name}-public-rt"
+    Project = var.project_name
   }
 
 }
@@ -22,14 +22,14 @@ resource "aws_route_table" "public" {
 #   }
 
 #   tags = {
-#     Name    = "${local.project_name}-private-rt"
-#     Project = local.project_name
+#     Name    = "${var.project_name}-private-rt"
+#     Project = var.project_name
 #   }
 # }
 
 resource "aws_route_table_association" "public" {
   for_each = {
-    for key, value in local.subnets : key => value
+    for key, value in var.subnets : key => value
     if value.public == true
   }
 
@@ -40,7 +40,7 @@ resource "aws_route_table_association" "public" {
 
 # resource "aws_route_table_association" "private" {
 #   for_each = {
-#     for key, value in local.subnets : key => value
+#     for key, value in var.subnets : key => value
 #     if value.public == false
 #   }
 

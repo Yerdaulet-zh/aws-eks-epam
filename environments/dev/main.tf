@@ -1,7 +1,9 @@
-locals {
-  region         = "eu-central-1"
-  project_name   = "epam-eks"
-  vpc_cidr_block = "10.1.0.0/16"
+module "vpc" {
+  source = "../../modules/vpc"
+
+  project_name = "aws-eks-epam"
+  region       = "eu-central-1"
+  vpc_cidr     = "10.1.0.0/16"
 
   subnets = {
     "public_a"  = { cidr = "10.1.1.0/24", az = "a", public = true, usage = "elb" }
