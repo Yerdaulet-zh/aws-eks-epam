@@ -17,7 +17,8 @@ module "vpc" {
   intra_subnets = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
 
   # GATEWAY
-  create_igw = true
+  create_igw             = true
+  create_egress_only_igw = true # IPv6 does not use NAT, gloabally unique IP addresses
 
   # disable nat gateway
   enable_nat_gateway     = false
