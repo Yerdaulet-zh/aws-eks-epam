@@ -3,13 +3,17 @@ module "vpc" {
   version = "6.6.0"
 
   # VPC
-  create_vpc              = true
-  name                    = "eks-vpc-epam"
-  cidr                    = "10.0.0.0/16"
-  use_ipam_pool           = false
-  enable_dns_support      = true
-  enable_dns_hostnames    = true
-  map_public_ip_on_launch = true
+  create_vpc                           = true
+  name                                 = "eks-vpc-epam"
+  cidr                                 = "10.0.0.0/16"
+  use_ipam_pool                        = false
+  enable_dns_support                   = true
+  enable_dns_hostnames                 = true
+  map_public_ip_on_launch              = true
+  enable_network_address_usage_metrics = true
+
+  # IPv6
+  enable_ipv6 = false
 
   # AZs
   azs = ["eu-central-1a", "eu-central-1b"]
@@ -21,7 +25,9 @@ module "vpc" {
   public_subnets      = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
   redshift_subnets    = ["10.0.41.0/24", "10.0.42.0/24"]
   intra_subnets       = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
-
+  # SUBNET NAME TAGS
+  # cache
+  elasticache_subnet_names = []
   # SUBNET TAGS
   # cache
   elasticache_subnet_tags = {}
@@ -37,10 +43,14 @@ module "vpc" {
   # SUBNET GROUPS
   # cache
   create_elasticache_subnet_group = true
+  elasticache_subnet_group_name   = null
   # database
   create_database_subnet_group = true
   # redshift
   create_redshift_subnet_group = false
+  # SUBNET GROUP TAGS
+  # cache
+  elasticache_subnet_group_tags = {}
 
   # VPC ROUTE TABLE
   create_multiple_intra_route_tables  = false
@@ -53,6 +63,8 @@ module "vpc" {
   # redshift
   create_redshift_subnet_route_table = false
   # ROUTE TABLE TAGS
+  # cache
+  elasticache_route_table_tags = {}
   # database
   database_route_table_tags = {}
 
