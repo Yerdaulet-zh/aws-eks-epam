@@ -80,6 +80,11 @@ module "vpc" {
   flow_log_cloudwatch_log_group_name_suffix  = ""
   # Log format
   flow_log_log_format = "$${version} $${account-id} $${interface-id} $${srcaddr} $${dstaddr} $${srcport} $${dstport} $${protocol} $${packets} $${bytes} $${start} $${end} $${action} $${log-status}"
+  # flow log tags
+  vpc_flow_log_tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
 
   # TAGS
   # REQUIRED for EKS
