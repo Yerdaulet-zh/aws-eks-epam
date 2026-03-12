@@ -38,7 +38,7 @@ module "vpc" {
 
   # RDS
   create_database_subnet_group           = true
-  create_database_subnet_route_table     = false # enable internal vpc communication
+  create_database_subnet_route_table     = false # internal vpc communication is enabled
   create_database_internet_gateway_route = false # disable vpc internet access to rds subnets
   create_database_nat_gateway_route      = false
 
