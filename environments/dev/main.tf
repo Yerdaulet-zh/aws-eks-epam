@@ -86,6 +86,11 @@ module "vpc" {
     Environment = "dev"
   }
 
+  # VPN
+  vpn_gateway_az   = null
+  vpn_gateway_id   = ""
+  vpn_gateway_tags = {}
+
   # TAGS
   # REQUIRED for EKS
   public_subnet_tags = {
