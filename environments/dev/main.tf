@@ -30,7 +30,7 @@ module "vpc" {
   # redshift
   create_redshift_subnet_group = false
 
-  # SUBNET ROUTE TABLE
+  # VPC ROUTE TABLE
   create_multiple_intra_route_tables  = false
   create_multiple_public_route_tables = false
   create_private_nat_gateway_route    = true
@@ -40,6 +40,10 @@ module "vpc" {
   create_database_subnet_route_table = false # internal vpc communication is enabled
   # redshift
   create_redshift_subnet_route_table = false
+  # ROUTE TABLE TAGS
+  # database
+  database_route_table_tags = {}
+
 
   # INTERNET GATEWAY
   create_igw             = true
