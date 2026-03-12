@@ -48,8 +48,15 @@ module "vpc" {
 
   # VPC LOGS
   enable_flow_log                      = false
-  create_flow_log_cloudwatch_iam_role  = true
   create_flow_log_cloudwatch_log_group = true
+  # IAM
+  create_flow_log_cloudwatch_iam_role     = true
+  vpc_flow_log_iam_policy_name            = "vpc-flow-log-to-cloudwatch"
+  vpc_flow_log_iam_policy_use_name_prefix = true # appends a random string at the end of policy name
+  vpc_flow_log_iam_role_name              = "vpc-flow-log-role"
+  vpc_flow_log_iam_role_use_name_prefix   = true
+  vpc_flow_log_iam_role_path              = "/engineering/devops/"
+  vpc_flow_log_permissions_boundary       = null
   # Storage & Cost Optimization
   flow_log_cloudwatch_log_group_class             = "INFREQUENT_ACCESS"
   flow_log_cloudwatch_log_group_retention_in_days = 30
