@@ -31,7 +31,7 @@ module "vpc" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  # NETWORKING SECURITY
+  # NETWORK SECURITY
   manage_default_network_acl = true
   # Global Kill Switch: Total isolation for the VPC
   vpc_block_public_access_options = {
@@ -39,9 +39,26 @@ module "vpc" {
   }
   # Exeptions from Total isolation
   vpc_block_public_access_exclusions = {
-    ingress_egress = {
+    "public_0" = {
       internet_gateway_exclusion_mode = "allow-bidirectional"
-      subnet_ids                      = module.vpc.public_subnets
+      subnet_type                     = "public"
+      subnet_index                    = 0
+      exclude_subnet                  = true  # Explicitly tell the module this is for a subnet
+      exclude_vpc                     = false # Ensure it doesn't try to apply to the whole VPC
+    }
+    "public_1" = {
+      internet_gateway_exclusion_mode = "allow-bidirectional"
+      subnet_type                     = "public"
+      subnet_index                    = 1
+      exclude_subnet                  = true
+      exclude_vpc                     = false
+    }
+    "public_2" = {
+      internet_gateway_exclusion_mode = "allow-bidirectional"
+      subnet_type                     = "public"
+      subnet_index                    = 2
+      exclude_subnet                  = true
+      exclude_vpc                     = false
     }
   }
 
