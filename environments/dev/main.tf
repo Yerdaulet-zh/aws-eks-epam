@@ -36,7 +36,6 @@ module "vpc" {
   create_elasticache_subnet_group       = true
   create_elasticache_subnet_route_table = true
 
-
   # RDS
   create_database_subnet_group           = true
   create_database_subnet_route_table     = false # internal vpc communication is enabled
@@ -46,8 +45,12 @@ module "vpc" {
   # REDSHIFT
   enable_public_redshift = false
 
-  # TAGS
+  # VPC LOGS
+  enable_flow_log                      = true
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
 
+  # TAGS
   # REQUIRED for EKS
   public_subnet_tags = {
     "kubernetes.io/role/elb"            = "1"
