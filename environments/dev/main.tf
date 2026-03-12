@@ -4,8 +4,9 @@ module "vpc" {
 
   create_vpc = true
 
-  name = "eks-vpc-epam"
-  cidr = "10.0.0.0/16"
+  name          = "eks-vpc-epam"
+  cidr          = "10.0.0.0/16"
+  use_ipam_pool = false
 
   # SUBNETS
   azs                 = ["eu-central-1a", "eu-central-1b"]
