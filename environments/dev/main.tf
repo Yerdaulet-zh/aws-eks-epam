@@ -27,12 +27,19 @@ module "vpc" {
   create_elasticache_subnet_group = true
   # database
   create_database_subnet_group = true
+  # redshift
+  create_redshift_subnet_group = false
 
   # SUBNET ROUTE TABLE
+  create_multiple_intra_route_tables  = false
+  create_multiple_public_route_tables = false
+  create_private_nat_gateway_route    = true
   # cache
   create_elasticache_subnet_route_table = true
   # database
   create_database_subnet_route_table = false # internal vpc communication is enabled
+  # redshift
+  create_redshift_subnet_route_table = false
 
   # INTERNET GATEWAY
   create_igw             = true
@@ -78,14 +85,46 @@ module "vpc" {
       exclude_vpc                     = false
     }
   }
+  # database ACL
+  database_dedicated_network_acl = true
+  database_inbound_acl_rules = flatten([
+    for i, cidr in ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"] : [
+      {
+        rule_number = 100 + i
+        rule_action = "allow"
+        from_port   = 5432
+        to_port     = 5432
+        protocol    = "tcp"
+        cidr_block  = cidr
+      }
+    ]
+  ])
+  database_outbound_acl_rules = flatten([
+    for i, cidr in ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"] : [
+      {
+        rule_number = 100 + i
+        rule_action = "allow"
+        from_port   = 1024
+        to_port     = 65535
+        protocol    = "tcp"
+        cidr_block  = cidr
+      }
+    ]
+  ])
+  # database ACL tags
+  database_acl_tags = {}
 
   # REDSHIFT
   enable_public_redshift = false
 
   # VPN
-  vpn_gateway_az   = null
-  vpn_gateway_id   = ""
-  vpn_gateway_tags = {}
+  vpn_gateway_id    = ""
+  vpn_gateway_az    = null
+  customer_gateways = {}
+  vpn_gateway_tags  = {}
+
+  # OUTPOST
+  customer_owned_ipv4_pool = null
 
   # VPC LOGS
   enable_flow_log                      = false
