@@ -2,42 +2,59 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "6.6.0"
 
-  create_vpc = true
+  # VPC
+  create_vpc              = true
+  name                    = "eks-vpc-epam"
+  cidr                    = "10.0.0.0/16"
+  use_ipam_pool           = false
+  enable_dns_support      = true
+  enable_dns_hostnames    = true
+  map_public_ip_on_launch = true
 
-  name          = "eks-vpc-epam"
-  cidr          = "10.0.0.0/16"
-  use_ipam_pool = false
+  # AZs
+  azs = ["eu-central-1a", "eu-central-1b"]
 
-  # SUBNETS
-  azs                 = ["eu-central-1a", "eu-central-1b"]
+  # IPv4 SUBNETS
   database_subnets    = ["10.0.21.0/24", "10.0.22.0/24"]
   elasticache_subnets = ["10.0.31.0/24", "10.0.32.0/24"]
   private_subnets     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"]
   public_subnets      = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
-  # redshift_subnets    = ["10.0.41.0/24", "10.0.42.0/24"]
-  intra_subnets           = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
-  map_public_ip_on_launch = true
+  redshift_subnets    = ["10.0.41.0/24", "10.0.42.0/24"]
+  intra_subnets       = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
 
-  # GATEWAY
+  # SUBNET GROUPS
+  # cache
+  create_elasticache_subnet_group = true
+  # database
+  create_database_subnet_group = true
+
+  # SUBNET ROUTE TABLE
+  # cache
+  create_elasticache_subnet_route_table = true
+  # database
+  create_database_subnet_route_table = false # internal vpc communication is enabled
+
+  # INTERNET GATEWAY
   create_igw             = true
   create_egress_only_igw = true # IPv6 does not use NAT, gloabally unique IP addresses
+  # database gateway
+  create_database_internet_gateway_route = false # disable vpc internet access to rds subnets
 
-  # disable nat gateway
+  # NAT GATEWAY
   enable_nat_gateway     = false
   single_nat_gateway     = true
   one_nat_gateway_per_az = false
-
-  # DNS
-  enable_dns_support   = true
-  enable_dns_hostnames = true
+  # database nat gateway
+  create_database_nat_gateway_route = false
 
   # NETWORK SECURITY
+  # VPC ACL
   manage_default_network_acl = true
   # Global Kill Switch: Total isolation for the VPC
   vpc_block_public_access_options = {
     internet_gateway_block_mode = "block-bidirectional"
   }
-  # Exeptions from Total isolation
+  # Exeptions from Total VPC isolation
   vpc_block_public_access_exclusions = {
     "public_0" = {
       internet_gateway_exclusion_mode = "allow-bidirectional"
@@ -62,18 +79,13 @@ module "vpc" {
     }
   }
 
-  # CACHE
-  create_elasticache_subnet_group       = true
-  create_elasticache_subnet_route_table = true
-
-  # RDS
-  create_database_subnet_group           = true
-  create_database_subnet_route_table     = false # internal vpc communication is enabled
-  create_database_internet_gateway_route = false # disable vpc internet access to rds subnets
-  create_database_nat_gateway_route      = false
-
   # REDSHIFT
   enable_public_redshift = false
+
+  # VPN
+  vpn_gateway_az   = null
+  vpn_gateway_id   = ""
+  vpn_gateway_tags = {}
 
   # VPC LOGS
   enable_flow_log                      = false
@@ -114,11 +126,6 @@ module "vpc" {
     Terraform   = "true"
     Environment = "dev"
   }
-
-  # VPN
-  vpn_gateway_az   = null
-  vpn_gateway_id   = ""
-  vpn_gateway_tags = {}
 
   # TAGS
   # REQUIRED for EKS
