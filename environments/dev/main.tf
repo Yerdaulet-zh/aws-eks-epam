@@ -100,6 +100,32 @@ module "vpc" {
       exclude_vpc                     = false
     }
   }
+  # cache
+  elasticache_dedicated_network_acl = true
+  elasticache_inbound_acl_rules = flatten([
+    for i, cidr in ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"] : [
+      {
+        rule_number = 100 + i
+        rule_action = "allow"
+        from_port   = 6379
+        to_port     = 6379
+        protocol    = "tcp"
+        cidr_block  = cidr
+      }
+    ]
+  ])
+  elasticache_outbound_acl_rules = flatten([
+    for i, cidr in ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"] : [
+      {
+        rule_number = 100 + i
+        rule_action = "allow"
+        from_port   = 1024
+        to_port     = 65535
+        protocol    = "tcp"
+        cidr_block  = cidr
+      }
+    ]
+  ])
   # database ACL
   database_dedicated_network_acl = true
   database_inbound_acl_rules = flatten([
@@ -126,6 +152,9 @@ module "vpc" {
       }
     ]
   ])
+  # ACL TAGS
+  # cache
+  elasticache_acl_tags = {}
   # database ACL tags
   database_acl_tags = {}
 
