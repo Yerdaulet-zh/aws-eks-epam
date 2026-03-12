@@ -14,7 +14,8 @@ module "vpc" {
   private_subnets     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"]
   public_subnets      = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
   # redshift_subnets    = ["10.0.41.0/24", "10.0.42.0/24"]
-  intra_subnets = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
+  intra_subnets           = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
+  map_public_ip_on_launch = true
 
   # GATEWAY
   create_igw             = true
@@ -46,9 +47,32 @@ module "vpc" {
   enable_public_redshift = false
 
   # VPC LOGS
-  enable_flow_log                      = true
+  enable_flow_log                      = false
   create_flow_log_cloudwatch_iam_role  = true
   create_flow_log_cloudwatch_log_group = true
+  # Storage & Cost Optimization
+  flow_log_cloudwatch_log_group_class             = "INFREQUENT_ACCESS"
+  flow_log_cloudwatch_log_group_retention_in_days = 30
+  flow_log_max_aggregation_interval               = 600 # 10min
+  # Data Structure (For Athena/S3)
+  flow_log_destination_type           = "cloud-watch-logs"
+  flow_log_destination_arn            = ""
+  flow_log_file_format                = "parquet"
+  flow_log_hive_compatible_partitions = true
+  flow_log_per_hour_partition         = true
+  # Security & Encryption
+  flow_log_cloudwatch_log_group_kms_key_id = null
+  flow_log_cloudwatch_iam_role_arn         = ""
+  flow_log_deliver_cross_account_role      = null
+  flow_log_cloudwatch_iam_role_conditions  = []
+  # Traffic Filtering
+  flow_log_traffic_type = "REJECT"
+  # Cloudwatch log group
+  flow_log_cloudwatch_log_group_skip_destroy = true
+  flow_log_cloudwatch_log_group_name_prefix  = "/aws/vpc-flow-log/"
+  flow_log_cloudwatch_log_group_name_suffix  = ""
+  # Log format
+  flow_log_log_format = "$${version} $${account-id} $${interface-id} $${srcaddr} $${dstaddr} $${srcport} $${dstport} $${protocol} $${packets} $${bytes} $${start} $${end} $${action} $${log-status}"
 
   # TAGS
   # REQUIRED for EKS
