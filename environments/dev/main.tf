@@ -22,6 +22,18 @@ module "vpc" {
   redshift_subnets    = ["10.0.41.0/24", "10.0.42.0/24"]
   intra_subnets       = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
 
+  # SUBNET TAGS
+  # cache
+  elasticache_subnet_tags = {}
+  # database
+  database_subnet_tags = {}
+
+  # SUBNET SUFFIX
+  # cache
+  elasticache_subnet_suffix = "elasticache"
+  # database
+  database_subnet_suffix = "db"
+
   # SUBNET GROUPS
   # cache
   create_elasticache_subnet_group = true
@@ -43,7 +55,6 @@ module "vpc" {
   # ROUTE TABLE TAGS
   # database
   database_route_table_tags = {}
-
 
   # INTERNET GATEWAY
   create_igw             = true
