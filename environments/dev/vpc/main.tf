@@ -6,14 +6,34 @@ module "vpc" {
   create_vpc                           = true
   name                                 = "eks-vpc-epam"
   cidr                                 = "10.0.0.0/16"
-  use_ipam_pool                        = false
+  use_ipam_pool                        = true
   enable_dns_support                   = true
   enable_dns_hostnames                 = true
   map_public_ip_on_launch              = true
   enable_network_address_usage_metrics = true
 
   # IPv6
-  enable_ipv6 = false
+  enable_ipv6         = true
+  ipv6_ipam_pool_id   = aws_vpc_ipam_pool.ipv6.id
+  ipv6_netmask_length = 56
+
+  # Enable IPv6 in specific subnets
+  public_subnet_ipv6_prefixes  = [0, 1, 2] # Becomes :00, :01, :02
+  private_subnet_ipv6_prefixes = [3, 4, 5, 6, 7]
+
+  # Assign IPv6 to resources automatically
+  public_subnet_assign_ipv6_address_on_creation = true
+
+  # --- DNS ---
+  # Helps IPv6-only resources find IPv4 services
+  private_subnet_enable_dns64 = true
+  intra_subnet_enable_dns64   = true
+
+  # ADD THESE to satisfy the DNS64/AAAA requirements
+  database_subnet_ipv6_prefixes    = [8, 9]
+  elasticache_subnet_ipv6_prefixes = [10, 11]
+  redshift_subnet_ipv6_prefixes    = [12, 13]
+  intra_subnet_ipv6_prefixes       = [14, 15, 16]
 
   # AZs
   azs = ["eu-central-1a", "eu-central-1b"]
@@ -110,6 +130,15 @@ module "vpc" {
       subnet_index                    = 2
       exclude_subnet                  = true
       exclude_vpc                     = false
+    }
+    "private_subnets_egress" = {
+      internet_gateway_exclusion_mode = "allow-egress"
+      subnet_type                     = "private"
+      # If you don't specify an index, it applies to all subnets of this type
+      # depending on the module's logic, but to be safe for your specific 10.0.5.x:
+      subnet_index   = 4 # This is the index of 10.0.5.0/24 subnet
+      exclude_subnet = true
+      exclude_vpc    = false
     }
   }
   # cache
